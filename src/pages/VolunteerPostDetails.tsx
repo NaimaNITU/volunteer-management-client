@@ -1,12 +1,11 @@
-import { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
-import { motion } from 'framer-motion';
-import { Calendar, MapPin, Users, User, ArrowLeft, Heart } from 'lucide-react';
-import { VolunteerPost } from '../types';
-import { dummyVolunteerPosts } from '../data/dummyData';
-import { format } from 'date-fns';
-import { useAuth } from '../contexts/AuthContext';
-import BeVolunteerModal from '../components/BeVolunteerModal';
+import { useState, useEffect } from "react";
+import { useParams, useNavigate } from "react-router-dom";
+import { motion } from "framer-motion";
+import { Calendar, MapPin, Users, User, ArrowLeft, Heart } from "lucide-react";
+import { VolunteerPost } from "../types"; // Assuming you have this type defined
+import { format } from "date-fns";
+import { useAuth } from "../contexts/AuthContext";
+import BeVolunteerModal from "../components/BeVolunteerModal";
 
 export default function VolunteerPostDetails() {
   const { id } = useParams<{ id: string }>();
@@ -17,12 +16,24 @@ export default function VolunteerPostDetails() {
 
   useEffect(() => {
     if (id) {
-      const foundPost = dummyVolunteerPosts.find(p => p.id === id);
-      setPost(foundPost || null);
-      
-      if (foundPost) {
-        document.title = `${foundPost.title} - VolunteerHub`;
-      }
+      // Fetch post details from the API
+      const fetchPost = async () => {
+        try {
+          const response = await fetch(
+            `http://localhost:5000/volunteers/${id}`
+          );
+          if (response.ok) {
+            const data = await response.json();
+            setPost(data);
+            document.title = `${data.title} - VolunteerHub`;
+          } else {
+            console.error("Failed to fetch post:", response.statusText);
+          }
+        } catch (error) {
+          console.error("Error fetching post:", error);
+        }
+      };
+      fetchPost();
     }
   }, [id]);
 
@@ -31,10 +42,14 @@ export default function VolunteerPostDetails() {
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
           <div className="text-gray-400 text-6xl mb-4">📝</div>
-          <h2 className="text-2xl font-bold text-gray-900 mb-2">Post Not Found</h2>
-          <p className="text-gray-600 mb-6">The volunteer opportunity you're looking for doesn't exist.</p>
+          <h2 className="text-2xl font-bold text-gray-900 mb-2">
+            Post Not Found
+          </h2>
+          <p className="text-gray-600 mb-6">
+            The volunteer opportunity you're looking for doesn't exist.
+          </p>
           <button
-            onClick={() => navigate('/volunteer-posts')}
+            onClick={() => navigate("/volunteer-posts")}
             className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors"
           >
             Browse All Posts
@@ -44,7 +59,8 @@ export default function VolunteerPostDetails() {
     );
   }
 
-  const isUrgent = new Date(post.deadline) <= new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
+  const isUrgent =
+    new Date(post.deadline) <= new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
   const isOwnPost = user?.email === post.organizerEmail;
 
   return (
@@ -114,7 +130,9 @@ export default function VolunteerPostDetails() {
                 </div>
                 <div>
                   <p className="text-sm text-gray-500">Volunteers Needed</p>
-                  <p className="font-semibold text-gray-900">{post.volunteersNeeded}</p>
+                  <p className="font-semibold text-gray-900">
+                    {post.volunteersNeeded}
+                  </p>
                 </div>
               </div>
 
@@ -125,7 +143,7 @@ export default function VolunteerPostDetails() {
                 <div>
                   <p className="text-sm text-gray-500">Deadline</p>
                   <p className="font-semibold text-gray-900">
-                    {format(new Date(post.deadline), 'MMM dd, yyyy')}
+                    {format(new Date(post.deadline), "MMM dd, yyyy")}
                   </p>
                 </div>
               </div>
@@ -133,7 +151,9 @@ export default function VolunteerPostDetails() {
 
             {/* Description */}
             <div className="mb-8">
-              <h2 className="text-2xl font-bold text-gray-900 mb-4">About This Opportunity</h2>
+              <h2 className="text-2xl font-bold text-gray-900 mb-4">
+                About This Opportunity
+              </h2>
               <p className="text-gray-700 leading-relaxed text-lg">
                 {post.description}
               </p>
@@ -141,13 +161,17 @@ export default function VolunteerPostDetails() {
 
             {/* Organizer Info */}
             <div className="bg-gray-50 rounded-lg p-6 mb-8">
-              <h3 className="text-lg font-semibold text-gray-900 mb-3">Organizer Information</h3>
+              <h3 className="text-lg font-semibold text-gray-900 mb-3">
+                Organizer Information
+              </h3>
               <div className="flex items-center space-x-3">
                 <div className="bg-gray-200 p-2 rounded-full">
                   <User className="h-6 w-6 text-gray-600" />
                 </div>
                 <div>
-                  <p className="font-medium text-gray-900">{post.organizerName}</p>
+                  <p className="font-medium text-gray-900">
+                    {post.organizerName}
+                  </p>
                   <p className="text-gray-600">{post.organizerEmail}</p>
                 </div>
               </div>
@@ -175,16 +199,19 @@ export default function VolunteerPostDetails() {
             {isOwnPost && (
               <div className="text-center">
                 <div className="bg-yellow-50 border border-yellow-200 text-yellow-800 px-6 py-4 rounded-lg">
-                  This is your own volunteer post. You cannot volunteer for your own opportunity.
+                  This is your own volunteer post. You cannot volunteer for your
+                  own opportunity.
                 </div>
               </div>
             )}
 
             {!user && (
               <div className="text-center">
-                <p className="text-gray-600 mb-4">Please log in to volunteer for this opportunity</p>
+                <p className="text-gray-600 mb-4">
+                  Please log in to volunteer for this opportunity
+                </p>
                 <button
-                  onClick={() => navigate('/login')}
+                  onClick={() => navigate("/login")}
                   className="bg-blue-600 text-white px-8 py-4 rounded-lg text-lg font-semibold hover:bg-blue-700 transition-colors"
                 >
                   Login to Volunteer
@@ -197,10 +224,7 @@ export default function VolunteerPostDetails() {
 
       {/* Be Volunteer Modal */}
       {showModal && (
-        <BeVolunteerModal
-          post={post}
-          onClose={() => setShowModal(false)}
-        />
+        <BeVolunteerModal post={post} onClose={() => setShowModal(false)} />
       )}
     </div>
   );

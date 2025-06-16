@@ -1,8 +1,8 @@
-import { Link } from 'react-router-dom';
-import { motion } from 'framer-motion';
-import { Calendar, MapPin, Users, Eye } from 'lucide-react';
-import { VolunteerPost } from '../types';
-import { format } from 'date-fns';
+import { Link } from "react-router-dom";
+import { motion } from "framer-motion";
+import { Calendar, MapPin, Users, Eye } from "lucide-react";
+import { VolunteerPost } from "../types";
+import { format } from "date-fns";
 
 interface VolunteerCardProps {
   post: VolunteerPost;
@@ -10,7 +10,8 @@ interface VolunteerCardProps {
 }
 
 export default function VolunteerCard({ post, index = 0 }: VolunteerCardProps) {
-  const isUrgent = new Date(post.deadline) <= new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
+  const isUrgent =
+    new Date(post.deadline) <= new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
 
   return (
     <motion.div
@@ -43,10 +44,8 @@ export default function VolunteerCard({ post, index = 0 }: VolunteerCardProps) {
         <h3 className="text-xl font-bold text-gray-900 mb-2 group-hover:text-blue-600 transition-colors">
           {post.title}
         </h3>
-        
-        <p className="text-gray-600 mb-4 line-clamp-2">
-          {post.description}
-        </p>
+
+        <p className="text-gray-600 mb-4 line-clamp-2">{post.description}</p>
 
         <div className="space-y-2 mb-4">
           <div className="flex items-center text-sm text-gray-500">
@@ -59,12 +58,12 @@ export default function VolunteerCard({ post, index = 0 }: VolunteerCardProps) {
           </div>
           <div className="flex items-center text-sm text-gray-500">
             <Calendar className="h-4 w-4 mr-2" />
-            Deadline: {format(new Date(post.deadline), 'MMM dd, yyyy')}
+            Deadline: {format(new Date(post.deadline), "MMM dd, yyyy")}
           </div>
         </div>
 
         <Link
-          to={`/volunteer-post/${post.id}`}
+          to={`/volunteer-post/${post._id}`}
           className="inline-flex items-center justify-center w-full bg-blue-600 text-white px-4 py-2 rounded-lg font-medium hover:bg-blue-700 transition-colors group"
         >
           <Eye className="h-4 w-4 mr-2" />

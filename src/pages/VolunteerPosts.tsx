@@ -1,42 +1,54 @@
-import { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
-import { Search, LayoutGrid, List } from 'lucide-react';
-import VolunteerCard from '../components/VolunteerCard';
-import { dummyVolunteerPosts } from '../data/dummyData';
-import { VolunteerPost } from '../types';
-import { format } from 'date-fns';
+import { useState, useEffect } from "react";
+import { motion } from "framer-motion";
+import { Search, LayoutGrid, List } from "lucide-react";
+import { VolunteerPost } from "../types"; // Assuming you have this type defined
+import { format } from "date-fns";
+import VolunteerCard from "../components/VolunteerCard";
 
 export default function VolunteerPosts() {
   const [posts, setPosts] = useState<VolunteerPost[]>([]);
   const [filteredPosts, setFilteredPosts] = useState<VolunteerPost[]>([]);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState('');
+  const [searchTerm, setSearchTerm] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState("");
   const [isGridView, setIsGridView] = useState(true);
 
   useEffect(() => {
-    document.title = 'All Volunteer Posts - VolunteerHub';
-    setPosts(dummyVolunteerPosts);
-    setFilteredPosts(dummyVolunteerPosts);
+    document.title = "All Volunteer Posts - VolunteerHub";
+
+    // Fetch the posts from the backend API
+    const fetchPosts = async () => {
+      try {
+        const response = await fetch("http://localhost:5000/volunteers");
+        const data = await response.json();
+        setPosts(data);
+        setFilteredPosts(data);
+      } catch (error) {
+        console.error("Error fetching posts:", error);
+      }
+    };
+
+    fetchPosts();
   }, []);
 
   useEffect(() => {
     let filtered = posts;
 
     if (searchTerm) {
-      filtered = filtered.filter(post =>
-        post.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        post.description.toLowerCase().includes(searchTerm.toLowerCase())
+      filtered = filtered.filter(
+        (post) =>
+          post.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          post.description.toLowerCase().includes(searchTerm.toLowerCase())
       );
     }
 
     if (selectedCategory) {
-      filtered = filtered.filter(post => post.category === selectedCategory);
+      filtered = filtered.filter((post) => post.category === selectedCategory);
     }
 
     setFilteredPosts(filtered);
   }, [searchTerm, selectedCategory, posts]);
 
-  const categories = [...new Set(posts.map(post => post.category))];
+  const categories = [...new Set(posts.map((post) => post.category))];
 
   const TableView = () => (
     <div className="bg-white rounded-lg shadow overflow-hidden">
@@ -67,7 +79,7 @@ export default function VolunteerPosts() {
           <tbody className="bg-white divide-y divide-gray-200">
             {filteredPosts.map((post, index) => (
               <motion.tr
-                key={post.id}
+                key={post._id}
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: index * 0.05 }}
@@ -102,11 +114,11 @@ export default function VolunteerPosts() {
                   {post.volunteersNeeded}
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                  {format(new Date(post.deadline), 'MMM dd, yyyy')}
+                  {format(new Date(post.deadline), "MMM dd, yyyy")}
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                   <a
-                    href={`/volunteer-post/${post.id}`}
+                    href={`/volunteer-post/${post._id}`}
                     className="text-blue-600 hover:text-blue-900"
                   >
                     View Details
@@ -129,7 +141,9 @@ export default function VolunteerPosts() {
           transition={{ duration: 0.6 }}
           className="mb-8"
         >
-          <h1 className="text-4xl font-bold text-gray-900 mb-2">All Volunteer Opportunities</h1>
+          <h1 className="text-4xl font-bold text-gray-900 mb-2">
+            All Volunteer Opportunities
+          </h1>
           <p className="text-xl text-gray-600">
             Discover meaningful ways to contribute to your community
           </p>
@@ -163,8 +177,10 @@ export default function VolunteerPosts() {
                 className="px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               >
                 <option value="">All Categories</option>
-                {categories.map(category => (
-                  <option key={category} value={category}>{category}</option>
+                {categories.map((category) => (
+                  <option key={category} value={category}>
+                    {category}
+                  </option>
                 ))}
               </select>
             </div>
@@ -174,7 +190,9 @@ export default function VolunteerPosts() {
               <button
                 onClick={() => setIsGridView(true)}
                 className={`p-2 rounded-md transition-colors ${
-                  isGridView ? 'bg-white text-blue-600 shadow-sm' : 'text-gray-500 hover:text-gray-700'
+                  isGridView
+                    ? "bg-white text-blue-600 shadow-sm"
+                    : "text-gray-500 hover:text-gray-700"
                 }`}
               >
                 <LayoutGrid className="h-5 w-5" />
@@ -182,7 +200,9 @@ export default function VolunteerPosts() {
               <button
                 onClick={() => setIsGridView(false)}
                 className={`p-2 rounded-md transition-colors ${
-                  !isGridView ? 'bg-white text-blue-600 shadow-sm' : 'text-gray-500 hover:text-gray-700'
+                  !isGridView
+                    ? "bg-white text-blue-600 shadow-sm"
+                    : "text-gray-500 hover:text-gray-700"
                 }`}
               >
                 <List className="h-5 w-5" />
@@ -200,11 +220,13 @@ export default function VolunteerPosts() {
           {filteredPosts.length === 0 ? (
             <div className="text-center py-12">
               <div className="text-gray-400 text-6xl mb-4">🔍</div>
-              <h3 className="text-xl font-medium text-gray-900 mb-2">No volunteer opportunities found</h3>
+              <h3 className="text-xl font-medium text-gray-900 mb-2">
+                No volunteer opportunities found
+              </h3>
               <p className="text-gray-600">
                 {searchTerm || selectedCategory
-                  ? 'Try adjusting your search or filter criteria.'
-                  : 'No volunteer posts are available at the moment.'}
+                  ? "Try adjusting your search or filter criteria."
+                  : "No volunteer posts are available at the moment."}
               </p>
             </div>
           ) : (
@@ -218,7 +240,7 @@ export default function VolunteerPosts() {
               {isGridView ? (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                   {filteredPosts.map((post, index) => (
-                    <VolunteerCard key={post.id} post={post} index={index} />
+                    <VolunteerCard key={post._id} post={post} index={index} />
                   ))}
                 </div>
               ) : (

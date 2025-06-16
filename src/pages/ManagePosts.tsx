@@ -1,42 +1,102 @@
-import { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
-import { Edit, Trash2, Eye, Users, Calendar, MapPin } from 'lucide-react';
-import { useAuth } from '../contexts/AuthContext';
-import { VolunteerPost, VolunteerRequest } from '../types';
-import { dummyVolunteerPosts, dummyVolunteerRequests } from '../data/dummyData';
-import { format } from 'date-fns';
-import toast from 'react-hot-toast';
+import { useState, useEffect } from "react";
+import { motion } from "framer-motion";
+import { Edit, Trash2, Eye, Users, Calendar, MapPin } from "lucide-react";
+import { useAuth } from "../contexts/AuthContext";
+import { VolunteerPost, VolunteerRequest } from "../types";
+import toast from "react-hot-toast";
+import { format } from "date-fns";
 
 export default function ManagePosts() {
   const { user } = useAuth();
   const [myPosts, setMyPosts] = useState<VolunteerPost[]>([]);
   const [myRequests, setMyRequests] = useState<VolunteerRequest[]>([]);
 
-  useEffect(() => {
-    document.title = 'Manage My Posts - VolunteerHub';
-    
-    if (user) {
-      // Filter posts by current user
-      const userPosts = dummyVolunteerPosts.filter(post => post.organizerEmail === user.email);
-      setMyPosts(userPosts);
+  console.log(user, "User");
 
-      // Filter requests by current user
-      const userRequests = dummyVolunteerRequests.filter(request => request.volunteerEmail === user.email);
-      setMyRequests(userRequests);
+  useEffect(() => {
+    document.title = "Manage My Posts - VolunteerHub";
+
+    if (user) {
+      // Fetch posts by current user
+      const fetchPosts = async () => {
+        try {
+          const response = await fetch(
+            `http://localhost:5000/volunteers/email?organizerEmail=${user.email}`
+          );
+          const data = await response.json();
+          setMyPosts(data);
+        } catch (error) {
+          console.error("Error fetching posts:", error);
+        }
+      };
+
+      // Fetch volunteer requests by current user
+      const fetchRequests = async () => {
+        try {
+          const response = await fetch(
+            `http://localhost:5000/volunteer-requests?volunteerEmail=${user.email}`
+          );
+          const data = await response.json();
+          setMyRequests(data);
+        } catch (error) {
+          console.error("Error fetching requests:", error);
+        }
+      };
+
+      fetchPosts();
+      fetchRequests();
     }
   }, [user]);
 
-  const handleDeletePost = (postId: string) => {
-    if (window.confirm('Are you sure you want to delete this post? This action cannot be undone.')) {
-      setMyPosts(prev => prev.filter(post => post.id !== postId));
-      toast.success('Post deleted successfully');
+  const handleDeletePost = async (postId: string) => {
+    if (
+      window.confirm(
+        "Are you sure you want to delete this post? This action cannot be undone."
+      )
+    ) {
+      try {
+        const response = await fetch(
+          `http://localhost:5000/volunteers/${postId}`,
+          {
+            method: "DELETE",
+          }
+        );
+        if (response.ok) {
+          setMyPosts((prev) => prev.filter((post) => post._id !== postId));
+          toast.success("Post deleted successfully");
+        } else {
+          toast.error("Failed to delete post");
+        }
+      } catch (error) {
+        console.error("Error deleting post:", error);
+        toast.error("Error deleting post");
+      }
     }
   };
 
-  const handleCancelRequest = (requestId: string) => {
-    if (window.confirm('Are you sure you want to cancel this volunteer request?')) {
-      setMyRequests(prev => prev.filter(request => request.id !== requestId));
-      toast.success('Volunteer request cancelled successfully');
+  const handleCancelRequest = async (requestId: string) => {
+    if (
+      window.confirm("Are you sure you want to cancel this volunteer request?")
+    ) {
+      try {
+        const response = await fetch(
+          `http://localhost:5000/volunteer-requests/${requestId}`,
+          {
+            method: "DELETE",
+          }
+        );
+        if (response.ok) {
+          setMyRequests((prev) =>
+            prev.filter((request) => request.id !== requestId)
+          );
+          toast.success("Volunteer request cancelled successfully");
+        } else {
+          toast.error("Failed to cancel request");
+        }
+      } catch (error) {
+        console.error("Error cancelling request:", error);
+        toast.error("Error cancelling request");
+      }
     }
   };
 
@@ -44,7 +104,9 @@ export default function ManagePosts() {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
-          <h2 className="text-2xl font-bold text-gray-900 mb-4">Please log in to manage your posts</h2>
+          <h2 className="text-2xl font-bold text-gray-900 mb-4">
+            Please log in to manage your posts
+          </h2>
         </div>
       </div>
     );
@@ -59,7 +121,9 @@ export default function ManagePosts() {
           transition={{ duration: 0.6 }}
           className="mb-8"
         >
-          <h1 className="text-4xl font-bold text-gray-900 mb-2">Manage My Posts</h1>
+          <h1 className="text-4xl font-bold text-gray-900 mb-2">
+            Manage My Posts
+          </h1>
           <p className="text-xl text-gray-600">
             Manage your volunteer opportunities and requests
           </p>
@@ -72,14 +136,19 @@ export default function ManagePosts() {
           transition={{ duration: 0.6, delay: 0.1 }}
           className="mb-12"
         >
-          <h2 className="text-2xl font-bold text-gray-900 mb-6">My Volunteer Need Posts</h2>
-          
+          <h2 className="text-2xl font-bold text-gray-900 mb-6">
+            My Volunteer Need Posts
+          </h2>
+
           {myPosts.length === 0 ? (
             <div className="bg-white rounded-lg shadow-sm p-8 text-center">
               <div className="text-gray-400 text-6xl mb-4">📝</div>
-              <h3 className="text-xl font-medium text-gray-900 mb-2">No volunteer posts yet</h3>
+              <h3 className="text-xl font-medium text-gray-900 mb-2">
+                No volunteer posts yet
+              </h3>
               <p className="text-gray-600 mb-6">
-                You haven't created any volunteer opportunities yet. Start by creating your first post.
+                You haven't created any volunteer opportunities yet. Start by
+                creating your first post.
               </p>
               <a
                 href="/add-post"
@@ -114,7 +183,7 @@ export default function ManagePosts() {
                   <tbody className="bg-white divide-y divide-gray-200">
                     {myPosts.map((post, index) => (
                       <motion.tr
-                        key={post.id}
+                        key={post._id}
                         initial={{ opacity: 0, y: 10 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: index * 0.05 }}
@@ -152,27 +221,31 @@ export default function ManagePosts() {
                         <td className="px-6 py-4 whitespace-nowrap">
                           <div className="flex items-center text-sm text-gray-500">
                             <Calendar className="h-4 w-4 mr-1" />
-                            {format(new Date(post.deadline), 'MMM dd, yyyy')}
+                            {format(new Date(post.deadline), "MMM dd, yyyy")}
                           </div>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                           <div className="flex space-x-2">
                             <a
-                              href={`/volunteer-post/${post.id}`}
+                              href={`/volunteer-post/${post._id}`}
                               className="text-blue-600 hover:text-blue-900 p-1"
                               title="View Details"
                             >
                               <Eye className="h-4 w-4" />
                             </a>
                             <button
-                              onClick={() => toast.info('Update functionality will be implemented with backend!')}
+                              onClick={() =>
+                                toast(
+                                  "Update functionality will be implemented with backend!"
+                                )
+                              }
                               className="text-green-600 hover:text-green-900 p-1"
                               title="Edit Post"
                             >
                               <Edit className="h-4 w-4" />
                             </button>
                             <button
-                              onClick={() => handleDeletePost(post.id)}
+                              onClick={() => handleDeletePost(post._id)}
                               className="text-red-600 hover:text-red-900 p-1"
                               title="Delete Post"
                             >
@@ -195,14 +268,19 @@ export default function ManagePosts() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.2 }}
         >
-          <h2 className="text-2xl font-bold text-gray-900 mb-6">My Volunteer Requests</h2>
-          
+          <h2 className="text-2xl font-bold text-gray-900 mb-6">
+            My Volunteer Requests
+          </h2>
+
           {myRequests.length === 0 ? (
             <div className="bg-white rounded-lg shadow-sm p-8 text-center">
               <div className="text-gray-400 text-6xl mb-4">🙋‍♂️</div>
-              <h3 className="text-xl font-medium text-gray-900 mb-2">No volunteer requests yet</h3>
+              <h3 className="text-xl font-medium text-gray-900 mb-2">
+                No volunteer requests yet
+              </h3>
               <p className="text-gray-600 mb-6">
-                You haven't applied to volunteer for any opportunities yet. Browse available posts to get started.
+                You haven't applied to volunteer for any opportunities yet.
+                Browse available posts to get started.
               </p>
               <a
                 href="/volunteer-posts"
@@ -267,16 +345,21 @@ export default function ManagePosts() {
                           </span>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
-                          <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
-                            request.status === 'requested' ? 'bg-yellow-100 text-yellow-800' :
-                            request.status === 'approved' ? 'bg-green-100 text-green-800' :
-                            'bg-red-100 text-red-800'
-                          }`}>
-                            {request.status.charAt(0).toUpperCase() + request.status.slice(1)}
+                          <span
+                            className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
+                              request.status === "requested"
+                                ? "bg-yellow-100 text-yellow-800"
+                                : request.status === "approved"
+                                ? "bg-green-100 text-green-800"
+                                : "bg-red-100 text-red-800"
+                            }`}
+                          >
+                            {request.status.charAt(0).toUpperCase() +
+                              request.status.slice(1)}
                           </span>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                          {format(new Date(request.createdAt), 'MMM dd, yyyy')}
+                          {format(new Date(request.createdAt), "MMM dd, yyyy")}
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                           <button

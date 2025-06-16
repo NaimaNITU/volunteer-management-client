@@ -1,12 +1,20 @@
-import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { motion } from 'framer-motion';
-import { useForm } from 'react-hook-form';
-import DatePicker from 'react-datepicker';
-import { Plus, Image, FileText, MapPin, Users, Calendar, Tag } from 'lucide-react';
-import { useAuth } from '../contexts/AuthContext';
-import toast from 'react-hot-toast';
-import 'react-datepicker/dist/react-datepicker.css';
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { motion } from "framer-motion";
+import { useForm } from "react-hook-form";
+import DatePicker from "react-datepicker";
+import {
+  Plus,
+  Image,
+  FileText,
+  MapPin,
+  Users,
+  Calendar,
+  Tag,
+} from "lucide-react";
+import { useAuth } from "../contexts/AuthContext";
+import toast from "react-hot-toast";
+import "react-datepicker/dist/react-datepicker.css";
 
 interface PostForm {
   thumbnail: string;
@@ -19,16 +27,16 @@ interface PostForm {
 }
 
 const categories = [
-  'Healthcare',
-  'Education',
-  'Social Service',
-  'Animal Welfare',
-  'Environmental',
-  'Community Development',
-  'Disaster Relief',
-  'Arts & Culture',
-  'Sports & Recreation',
-  'Technology'
+  "Healthcare",
+  "Education",
+  "Social Service",
+  "Animal Welfare",
+  "Environmental",
+  "Community Development",
+  "Disaster Relief",
+  "Arts & Culture",
+  "Sports & Recreation",
+  "Technology",
 ];
 
 export default function AddPost() {
@@ -38,40 +46,55 @@ export default function AddPost() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    document.title = 'Add Volunteer Post - VolunteerHub';
+    document.title = "Add Volunteer Post - VolunteerHub";
   }, []);
 
-  const { register, handleSubmit, formState: { errors }, setValue } = useForm<PostForm>();
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<PostForm>();
 
   const onSubmit = async (data: PostForm) => {
     if (!user || !selectedDate) return;
 
     setIsSubmitting(true);
     try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1500));
-      
+      // Prepare the new post data
       const newPost = {
-        id: Date.now().toString(),
         thumbnail: data.thumbnail,
         title: data.title,
         description: data.description,
         category: data.category,
         location: data.location,
         volunteersNeeded: data.volunteersNeeded,
-        deadline: selectedDate.toISOString().split('T')[0],
+        deadline: selectedDate.toISOString().split("T")[0],
         organizerName: user.name,
         organizerEmail: user.email,
-        createdAt: new Date().toISOString()
+        createdAt: new Date().toISOString(),
       };
 
-      // In real app, this would save to backend
-      console.log('New post created:', newPost);
+      // Make POST request to backend API
+      const response = await fetch("http://localhost:5000/volunteers", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(newPost),
+      });
 
-      toast.success('Volunteer post created successfully!');
-      navigate('/manage-posts');
+      if (!response.ok) {
+        throw new Error("Failed to create volunteer post");
+      }
+
+      const result = await response.json();
+      console.log("New post created:", result);
+
+      toast.success("Volunteer post created successfully!");
+      navigate("/manage-posts");
     } catch (error) {
-      toast.error('Failed to create post. Please try again.');
+      console.error("Error creating post:", error);
+      toast.error("Failed to create post. Please try again.");
     } finally {
       setIsSubmitting(false);
     }
@@ -81,9 +104,11 @@ export default function AddPost() {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
-          <h2 className="text-2xl font-bold text-gray-900 mb-4">Please log in to create a post</h2>
+          <h2 className="text-2xl font-bold text-gray-900 mb-4">
+            Please log in to create a post
+          </h2>
           <button
-            onClick={() => navigate('/login')}
+            onClick={() => navigate("/login")}
             className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors"
           >
             Login
@@ -111,7 +136,9 @@ export default function AddPost() {
             >
               <Plus className="h-8 w-8 text-white" />
             </motion.div>
-            <h1 className="text-3xl font-bold text-gray-900">Create Volunteer Opportunity</h1>
+            <h1 className="text-3xl font-bold text-gray-900">
+              Create Volunteer Opportunity
+            </h1>
             <p className="text-gray-600 mt-2">
               Share your volunteer opportunity with the community
             </p>
@@ -125,19 +152,21 @@ export default function AddPost() {
                 Thumbnail Image URL
               </label>
               <input
-                {...register('thumbnail', {
-                  required: 'Thumbnail URL is required',
+                {...register("thumbnail", {
+                  required: "Thumbnail URL is required",
                   pattern: {
                     value: /^https?:\/\/.+\.(jpg|jpeg|png|gif|webp)$/i,
-                    message: 'Please enter a valid image URL'
-                  }
+                    message: "Please enter a valid image URL",
+                  },
                 })}
                 type="url"
                 className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 placeholder="https://example.com/image.jpg"
               />
               {errors.thumbnail && (
-                <p className="mt-1 text-sm text-red-600">{errors.thumbnail.message}</p>
+                <p className="mt-1 text-sm text-red-600">
+                  {errors.thumbnail.message}
+                </p>
               )}
             </div>
 
@@ -148,23 +177,25 @@ export default function AddPost() {
                 Post Title
               </label>
               <input
-                {...register('title', {
-                  required: 'Title is required',
+                {...register("title", {
+                  required: "Title is required",
                   minLength: {
                     value: 5,
-                    message: 'Title must be at least 5 characters long'
+                    message: "Title must be at least 5 characters long",
                   },
                   maxLength: {
                     value: 100,
-                    message: 'Title must not exceed 100 characters'
-                  }
+                    message: "Title must not exceed 100 characters",
+                  },
                 })}
                 type="text"
                 className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 placeholder="Enter a descriptive title for your volunteer opportunity"
               />
               {errors.title && (
-                <p className="mt-1 text-sm text-red-600">{errors.title.message}</p>
+                <p className="mt-1 text-sm text-red-600">
+                  {errors.title.message}
+                </p>
               )}
             </div>
 
@@ -175,19 +206,21 @@ export default function AddPost() {
                 Description
               </label>
               <textarea
-                {...register('description', {
-                  required: 'Description is required',
+                {...register("description", {
+                  required: "Description is required",
                   minLength: {
                     value: 50,
-                    message: 'Description must be at least 50 characters long'
-                  }
+                    message: "Description must be at least 50 characters long",
+                  },
                 })}
                 rows={6}
                 className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 placeholder="Describe the volunteer opportunity, what volunteers will do, requirements, and any other relevant information..."
               />
               {errors.description && (
-                <p className="mt-1 text-sm text-red-600">{errors.description.message}</p>
+                <p className="mt-1 text-sm text-red-600">
+                  {errors.description.message}
+                </p>
               )}
             </div>
 
@@ -199,18 +232,22 @@ export default function AddPost() {
                   Category
                 </label>
                 <select
-                  {...register('category', {
-                    required: 'Please select a category'
+                  {...register("category", {
+                    required: "Please select a category",
                   })}
                   className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 >
                   <option value="">Select a category</option>
-                  {categories.map(category => (
-                    <option key={category} value={category}>{category}</option>
+                  {categories.map((category) => (
+                    <option key={category} value={category}>
+                      {category}
+                    </option>
                   ))}
                 </select>
                 {errors.category && (
-                  <p className="mt-1 text-sm text-red-600">{errors.category.message}</p>
+                  <p className="mt-1 text-sm text-red-600">
+                    {errors.category.message}
+                  </p>
                 )}
               </div>
 
@@ -221,16 +258,16 @@ export default function AddPost() {
                   Number of Volunteers Needed
                 </label>
                 <input
-                  {...register('volunteersNeeded', {
-                    required: 'Number of volunteers is required',
+                  {...register("volunteersNeeded", {
+                    required: "Number of volunteers is required",
                     min: {
                       value: 1,
-                      message: 'At least 1 volunteer is required'
+                      message: "At least 1 volunteer is required",
                     },
                     max: {
                       value: 100,
-                      message: 'Maximum 100 volunteers allowed'
-                    }
+                      message: "Maximum 100 volunteers allowed",
+                    },
                   })}
                   type="number"
                   min="1"
@@ -239,7 +276,9 @@ export default function AddPost() {
                   placeholder="Enter number of volunteers needed"
                 />
                 {errors.volunteersNeeded && (
-                  <p className="mt-1 text-sm text-red-600">{errors.volunteersNeeded.message}</p>
+                  <p className="mt-1 text-sm text-red-600">
+                    {errors.volunteersNeeded.message}
+                  </p>
                 )}
               </div>
             </div>
@@ -251,19 +290,21 @@ export default function AddPost() {
                 Location
               </label>
               <input
-                {...register('location', {
-                  required: 'Location is required',
+                {...register("location", {
+                  required: "Location is required",
                   minLength: {
                     value: 5,
-                    message: 'Location must be at least 5 characters long'
-                  }
+                    message: "Location must be at least 5 characters long",
+                  },
                 })}
                 type="text"
                 className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 placeholder="Enter the location where volunteer work will take place"
               />
               {errors.location && (
-                <p className="mt-1 text-sm text-red-600">{errors.location.message}</p>
+                <p className="mt-1 text-sm text-red-600">
+                  {errors.location.message}
+                </p>
               )}
             </div>
 
@@ -283,13 +324,17 @@ export default function AddPost() {
                 required
               />
               {!selectedDate && (
-                <p className="mt-1 text-sm text-red-600">Deadline is required</p>
+                <p className="mt-1 text-sm text-red-600">
+                  Deadline is required
+                </p>
               )}
             </div>
 
             {/* Organizer Info (Read-only) */}
             <div className="bg-gray-50 rounded-lg p-6">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">Organizer Information</h3>
+              <h3 className="text-lg font-semibold text-gray-900 mb-4">
+                Organizer Information
+              </h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -329,7 +374,7 @@ export default function AddPost() {
                 disabled={isSubmitting || !selectedDate}
                 className="flex-1 bg-blue-600 text-white py-3 rounded-lg font-medium hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
               >
-                {isSubmitting ? 'Creating Post...' : 'Create Post'}
+                {isSubmitting ? "Creating Post..." : "Create Post"}
               </button>
             </div>
           </form>
