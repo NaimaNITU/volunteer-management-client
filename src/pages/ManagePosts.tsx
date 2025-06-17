@@ -5,6 +5,7 @@ import { useAuth } from "../contexts/AuthContext";
 import { VolunteerPost, VolunteerRequest } from "../types";
 import toast from "react-hot-toast";
 import { format } from "date-fns";
+import { Link } from "react-router-dom";
 
 export default function ManagePosts() {
   const { user } = useAuth();
@@ -233,7 +234,15 @@ export default function ManagePosts() {
                             >
                               <Eye className="h-4 w-4" />
                             </a>
-                            <button
+
+                            <Link
+                              to={`/update-post/${post._id}`}
+                              className="text-green-600 hover:text-green-900 p-1"
+                            >
+                              <Edit className="h-4 w-4 mr-2" />
+                            </Link>
+
+                            {/* <button
                               onClick={() =>
                                 toast(
                                   "Update functionality will be implemented with backend!"
@@ -243,7 +252,7 @@ export default function ManagePosts() {
                               title="Edit Post"
                             >
                               <Edit className="h-4 w-4" />
-                            </button>
+                            </button> */}
                             <button
                               onClick={() => handleDeletePost(post._id)}
                               className="text-red-600 hover:text-red-900 p-1"

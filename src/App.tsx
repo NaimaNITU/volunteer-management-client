@@ -12,6 +12,7 @@ import VolunteerPostDetails from "./pages/VolunteerPostDetails";
 import AddPost from "./pages/AddPost";
 import ManagePosts from "./pages/ManagePosts";
 import NotFound from "./pages/NotFound";
+import UpdatePost from "./pages/UpdatePost";
 
 function App() {
   return (
@@ -30,6 +31,14 @@ function App() {
                 element={
                   <ProtectedRoute>
                     <VolunteerPostDetails />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/update-post/:id"
+                element={
+                  <ProtectedRoute>
+                    <UpdatePost />
                   </ProtectedRoute>
                 }
               />

@@ -9,6 +9,8 @@ import {
   Heart,
   Award,
   MapPin,
+  Target,
+  Globe,
 } from "lucide-react";
 import { VolunteerPost } from "../types"; // Assuming you have this type defined
 import VolunteerCard from "../components/VolunteerCard"; // Assuming you have this component
@@ -269,6 +271,73 @@ export default function Home() {
               See All Opportunities
               <ArrowRight className="ml-2 h-5 w-5" />
             </Link>
+          </motion.div>
+        </div>
+      </section>
+
+      {/* Stats Section */}
+      <section className="py-20 bg-blue-600">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+            {[
+              { icon: Users, number: "10,000+", label: "Active Volunteers" },
+              { icon: Target, number: "500+", label: "Projects Completed" },
+              { icon: Award, number: "50+", label: "Awards Received" },
+              { icon: Globe, number: "25+", label: "Countries Served" },
+            ].map((stat, index) => (
+              <motion.div
+                key={index}
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: index * 0.1 }}
+                viewport={{ once: true }}
+                className="text-center text-white"
+              >
+                <div className="flex justify-center mb-4">
+                  <stat.icon className="h-12 w-12" />
+                </div>
+                <div className="text-4xl font-bold mb-2">{stat.number}</div>
+                <div className="text-blue-100 text-lg">{stat.label}</div>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Call to Action Section */}
+      <section className="py-20 bg-gradient-to-r from-emerald-600 to-blue-600">
+        <div className="max-w-4xl mx-auto text-center px-4 sm:px-6 lg:px-8">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+            viewport={{ once: true }}
+          >
+            <Heart
+              className="h-16 w-16 text-white mx-auto mb-8"
+              fill="currentColor"
+            />
+            <h2 className="text-4xl md:text-5xl font-bold text-white mb-6">
+              Ready to Make a Difference?
+            </h2>
+            <p className="text-xl text-white text-opacity-90 mb-8">
+              Join our community of passionate volunteers and help create
+              positive change in the world.
+            </p>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <Link
+                to="/register"
+                className="bg-white text-blue-600 hover:bg-gray-100 px-8 py-4 rounded-full text-lg font-semibold transition-colors duration-300 shadow-lg hover:shadow-xl"
+              >
+                Get Started Now
+              </Link>
+              <Link
+                to="/volunteer-posts"
+                className="border-2 border-white text-white hover:bg-white hover:text-blue-600 px-8 py-4 rounded-full text-lg font-semibold transition-colors duration-300"
+              >
+                Browse Opportunities
+              </Link>
+            </div>
           </motion.div>
         </div>
       </section>
