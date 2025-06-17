@@ -223,10 +223,8 @@ export default function Home() {
                 <div className="bg-blue-600 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
                   <stat.icon className="h-8 w-8 text-white" />
                 </div>
-                <div className="text-3xl font-bold text-gray-900 mb-2">
-                  {stat.value}
-                </div>
-                <div className="text-gray-600">{stat.label}</div>
+                <div className="text-3xl font-bold mb-2">{stat.value}</div>
+                <div>{stat.label}</div>
               </motion.div>
             ))}
           </div>
@@ -243,10 +241,8 @@ export default function Home() {
             viewport={{ once: true }}
             className="text-center mb-12"
           >
-            <h2 className="text-4xl font-bold text-gray-900 mb-4">
-              Volunteer Needs Now
-            </h2>
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+            <h2 className="text-4xl font-bold mb-4">Volunteer Needs Now</h2>
+            <p className="text-xl max-w-3xl mx-auto">
               Urgent volunteer opportunities with upcoming deadlines. Your
               immediate help can make a critical difference.
             </p>
