@@ -11,6 +11,9 @@ export default function ManagePosts() {
   const { user } = useAuth();
   const [myPosts, setMyPosts] = useState<VolunteerPost[]>([]);
   const [myRequests, setMyRequests] = useState<VolunteerRequest[]>([]);
+  const [selectedRequest, setSelectedRequest] =
+    useState<VolunteerRequest | null>(null);
+  const [showConfirmModal, setShowConfirmModal] = useState(false);
 
   console.log(user, "User");
 
@@ -74,6 +77,76 @@ export default function ManagePosts() {
         console.error("Error deleting post:", error);
         toast.error("Error deleting post");
       }
+    }
+  };
+
+  const handleCancelRequest = async () => {
+    if (!selectedRequest) return;
+    try {
+      const res = await fetch(
+        `http://localhost:5000/requests/${selectedRequest._id}`,
+        {
+          method: "DELETE",
+        }
+      );
+      if (res.ok) {
+        setMyRequests((prev) =>
+          prev.filter((req) => req._id !== selectedRequest._id)
+        );
+        toast.success("Request cancelled successfully");
+      } else {
+        toast.error("Failed to cancel request");
+      }
+    } catch (err) {
+      toast.error("Error cancelling request");
+      console.error(err);
+    } finally {
+      setShowConfirmModal(false);
+      setSelectedRequest(null);
+    }
+  };
+
+  const handleApproveRequest = async (request: VolunteerRequest) => {
+    try {
+      // 1. Update request status
+      const updateRes = await fetch(
+        `http://localhost:5000/requests/${request._id}`,
+        {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ status: "approved" }),
+        }
+      );
+
+      if (!updateRes.ok) throw new Error("Failed to update request");
+
+      // 2. Decrement volunteersNeeded
+      const volunteerRes = await fetch(
+        `http://localhost:5000/volunteers/${request.postId}/availability`,
+        {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ $inc: { volunteersNeeded: -1 } }), // Optional backend handles inc
+        }
+      );
+
+      if (!volunteerRes.ok) throw new Error("Failed to update volunteer slot");
+
+      // 3. Update local state
+      setMyRequests((prev) =>
+        prev.map((r) =>
+          r._id === request._id ? { ...r, status: "approved" } : r
+        )
+      );
+
+      toast.success("Request approved and volunteer count updated");
+    } catch (err) {
+      console.error(err);
+      toast.error("Approval failed");
     }
   };
 
@@ -305,6 +378,27 @@ export default function ManagePosts() {
                     <p className="text-sm font-semibold text-yellow-600 mt-3">
                       Status: {request.status}
                     </p>
+                    <div className="flex gap-2 mt-4">
+                      {request.status === "pending" && (
+                        <>
+                          <button
+                            onClick={() => handleApproveRequest(request)}
+                            className="px-4 py-2 text-white bg-green-600 hover:bg-green-700 rounded-md text-sm"
+                          >
+                            Approve
+                          </button>
+                          <button
+                            onClick={() => {
+                              setSelectedRequest(request);
+                              setShowConfirmModal(true);
+                            }}
+                            className="px-4 py-2 text-white bg-red-600 hover:bg-red-700 rounded-md text-sm"
+                          >
+                            Cancel
+                          </button>
+                        </>
+                      )}
+                    </div>
                   </motion.div>
                 ))}
               </div>
@@ -312,6 +406,31 @@ export default function ManagePosts() {
           )}
         </motion.section>
       </div>
+
+      {showConfirmModal && selectedRequest && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+          <div className="bg-white rounded-lg p-6 shadow-lg max-w-sm w-full">
+            <h2 className="text-lg font-semibold mb-4">Cancel Request?</h2>
+            <p className="text-gray-700 mb-6">
+              Are you sure you want to cancel this volunteer request?
+            </p>
+            <div className="flex justify-end space-x-2">
+              <button
+                className="px-4 py-2 rounded bg-gray-300 text-gray-700 hover:bg-gray-400"
+                onClick={() => setShowConfirmModal(false)}
+              >
+                No
+              </button>
+              <button
+                className="px-4 py-2 rounded bg-red-600 text-white hover:bg-red-700"
+                onClick={handleCancelRequest}
+              >
+                Yes, Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
