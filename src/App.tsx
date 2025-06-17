@@ -13,8 +13,14 @@ import AddPost from "./pages/AddPost";
 import ManagePosts from "./pages/ManagePosts";
 import NotFound from "./pages/NotFound";
 import UpdatePost from "./pages/UpdatePost";
+import { useEffect } from "react";
 
 function App() {
+  useEffect(() => {
+    const theme = localStorage.getItem("theme") || "light";
+    document.documentElement.setAttribute("data-theme", theme);
+    document.documentElement.classList.toggle("dark", theme === "dark");
+  }, []);
   return (
     <AuthProvider>
       <Router>

@@ -1,8 +1,9 @@
-import { Link, useLocation } from 'react-router-dom';
-import { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { Heart, Menu, X, User, Plus, Settings, LogOut } from 'lucide-react';
-import { useAuth } from '../contexts/AuthContext';
+import { Link, useLocation } from "react-router-dom";
+import { useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { Heart, Menu, X, Plus, Settings, LogOut } from "lucide-react";
+import { useAuth } from "../contexts/AuthContext";
+import ThemeToggle from "./ThemeToggle";
 
 export default function Navbar() {
   const { user, logout } = useAuth();
@@ -11,8 +12,8 @@ export default function Navbar() {
   const location = useLocation();
 
   const navItems = [
-    { path: '/', label: 'Home' },
-    { path: '/volunteer-posts', label: 'All Volunteer Posts' }
+    { path: "/", label: "Home" },
+    { path: "/volunteer-posts", label: "All Volunteer Posts" },
   ];
 
   const isActive = (path: string) => location.pathname === path;
@@ -30,19 +31,22 @@ export default function Navbar() {
             >
               <Heart className="h-6 w-6 text-white" />
             </motion.div>
-            <span className="text-xl font-bold text-gray-900">VolunteerHub</span>
+            <span className="text-xl font-bold text-gray-900">
+              VolunteerHub
+            </span>
           </Link>
 
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center space-x-8">
+            <ThemeToggle />
             {navItems.map((item) => (
               <Link
                 key={item.path}
                 to={item.path}
                 className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
                   isActive(item.path)
-                    ? 'text-blue-600 bg-blue-50'
-                    : 'text-gray-700 hover:text-blue-600 hover:bg-gray-50'
+                    ? "text-blue-600 bg-blue-50"
+                    : "text-gray-700 hover:text-blue-600 hover:bg-gray-50"
                 }`}
               >
                 {item.label}
@@ -62,7 +66,9 @@ export default function Navbar() {
                     alt={user.name}
                     className="w-8 h-8 rounded-full object-cover"
                   />
-                  <span className="text-sm font-medium text-gray-700">{user.name}</span>
+                  <span className="text-sm font-medium text-gray-700">
+                    {user.name}
+                  </span>
                 </button>
 
                 <AnimatePresence>
@@ -120,7 +126,11 @@ export default function Navbar() {
               onClick={() => setIsMenuOpen(!isMenuOpen)}
               className="p-2 rounded-md text-gray-700 hover:text-blue-600 hover:bg-gray-100"
             >
-              {isMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+              {isMenuOpen ? (
+                <X className="h-6 w-6" />
+              ) : (
+                <Menu className="h-6 w-6" />
+              )}
             </button>
           </div>
         </div>
@@ -130,7 +140,7 @@ export default function Navbar() {
           {isMenuOpen && (
             <motion.div
               initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: 'auto' }}
+              animate={{ opacity: 1, height: "auto" }}
               exit={{ opacity: 0, height: 0 }}
               className="md:hidden"
             >
@@ -141,8 +151,8 @@ export default function Navbar() {
                     to={item.path}
                     className={`block px-3 py-2 rounded-md text-base font-medium transition-colors ${
                       isActive(item.path)
-                        ? 'text-blue-600 bg-blue-50'
-                        : 'text-gray-700 hover:text-blue-600 hover:bg-gray-50'
+                        ? "text-blue-600 bg-blue-50"
+                        : "text-gray-700 hover:text-blue-600 hover:bg-gray-50"
                     }`}
                     onClick={() => setIsMenuOpen(false)}
                   >
@@ -158,7 +168,9 @@ export default function Navbar() {
                         alt={user.name}
                         className="w-8 h-8 rounded-full object-cover mr-3"
                       />
-                      <span className="text-base font-medium text-gray-700">{user.name}</span>
+                      <span className="text-base font-medium text-gray-700">
+                        {user.name}
+                      </span>
                     </div>
                     <Link
                       to="/add-post"
