@@ -35,7 +35,7 @@ export default function ManagePosts() {
       const fetchRequests = async () => {
         try {
           const response = await fetch(
-            `http://localhost:5000/volunteer-requests?volunteerEmail=${user.email}`
+            `http://localhost:5000/requests?volunteerEmail=${user.email}`
           );
           const data = await response.json();
           setMyRequests(data);
@@ -48,6 +48,8 @@ export default function ManagePosts() {
       fetchRequests();
     }
   }, [user]);
+
+  console.log(myRequests, "myRequests");
 
   const handleDeletePost = async (postId: string) => {
     if (
@@ -71,32 +73,6 @@ export default function ManagePosts() {
       } catch (error) {
         console.error("Error deleting post:", error);
         toast.error("Error deleting post");
-      }
-    }
-  };
-
-  const handleCancelRequest = async (requestId: string) => {
-    if (
-      window.confirm("Are you sure you want to cancel this volunteer request?")
-    ) {
-      try {
-        const response = await fetch(
-          `http://localhost:5000/volunteer-requests/${requestId}`,
-          {
-            method: "DELETE",
-          }
-        );
-        if (response.ok) {
-          setMyRequests((prev) =>
-            prev.filter((request) => request.id !== requestId)
-          );
-          toast.success("Volunteer request cancelled successfully");
-        } else {
-          toast.error("Failed to cancel request");
-        }
-      } catch (error) {
-        console.error("Error cancelling request:", error);
-        toast.error("Error cancelling request");
       }
     }
   };
@@ -300,88 +276,37 @@ export default function ManagePosts() {
             </div>
           ) : (
             <div className="bg-white rounded-lg shadow-sm overflow-hidden">
-              <div className="overflow-x-auto">
-                <table className="min-w-full divide-y divide-gray-200">
-                  <thead className="bg-gray-50">
-                    <tr>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Volunteer Opportunity
-                      </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Category
-                      </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Status
-                      </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Applied Date
-                      </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Actions
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody className="bg-white divide-y divide-gray-200">
-                    {myRequests.map((request, index) => (
-                      <motion.tr
-                        key={request.id}
-                        initial={{ opacity: 0, y: 10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: index * 0.05 }}
-                        className="hover:bg-gray-50"
-                      >
-                        <td className="px-6 py-4">
-                          <div className="flex items-center">
-                            <img
-                              src={request.thumbnail}
-                              alt={request.postTitle}
-                              className="w-16 h-16 rounded-lg object-cover mr-4"
-                            />
-                            <div>
-                              <div className="text-sm font-medium text-gray-900 line-clamp-2">
-                                {request.postTitle}
-                              </div>
-                              <div className="flex items-center text-sm text-gray-500 mt-1">
-                                <MapPin className="h-4 w-4 mr-1" />
-                                {request.location}
-                              </div>
-                            </div>
-                          </div>
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          <span className="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-blue-100 text-blue-800">
-                            {request.category}
-                          </span>
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          <span
-                            className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
-                              request.status === "requested"
-                                ? "bg-yellow-100 text-yellow-800"
-                                : request.status === "approved"
-                                ? "bg-green-100 text-green-800"
-                                : "bg-red-100 text-red-800"
-                            }`}
-                          >
-                            {request.status.charAt(0).toUpperCase() +
-                              request.status.slice(1)}
-                          </span>
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                          {format(new Date(request.createdAt), "MMM dd, yyyy")}
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                          <button
-                            onClick={() => handleCancelRequest(request.id)}
-                            className="text-red-600 hover:text-red-900"
-                          >
-                            Cancel
-                          </button>
-                        </td>
-                      </motion.tr>
-                    ))}
-                  </tbody>
-                </table>
+              <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+                {myRequests.map((request, index) => (
+                  <motion.div
+                    key={request.postId + index}
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: index * 0.05 }}
+                    className="bg-white shadow-md rounded-xl p-6 border"
+                  >
+                    <h3 className="text-lg font-semibold text-gray-800 mb-2">
+                      Request for Post ID: {request.postId}
+                    </h3>
+                    <p className="text-gray-600 mb-1">
+                      <span className="font-medium">Name:</span>{" "}
+                      {request.volunteerName}
+                    </p>
+                    <p className="text-gray-600 mb-1">
+                      <span className="font-medium">Email:</span>{" "}
+                      {request.volunteerEmail}
+                    </p>
+                    <p className="text-gray-600 mb-1">
+                      <span className="font-medium">Suggestion:</span>{" "}
+                      {request.suggestion.length > 80
+                        ? request.suggestion.slice(0, 80) + "..."
+                        : request.suggestion}
+                    </p>
+                    <p className="text-sm font-semibold text-yellow-600 mt-3">
+                      Status: {request.status}
+                    </p>
+                  </motion.div>
+                ))}
               </div>
             </div>
           )}

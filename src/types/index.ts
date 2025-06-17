@@ -20,21 +20,12 @@ export interface VolunteerPost {
 }
 
 export interface VolunteerRequest {
-  id: string;
+  _id: string;
   postId: string;
-  postTitle: string;
-  thumbnail: string;
-  description: string;
-  category: string;
-  location: string;
-  deadline: string;
-  organizerName: string;
-  organizerEmail: string;
   volunteerName: string;
   volunteerEmail: string;
   suggestion: string;
-  status: "requested" | "approved" | "rejected";
-  createdAt: string;
+  status: "pending" | "approved" | "rejected"; // Add more statuses if needed
 }
 
 export interface AuthContextType {

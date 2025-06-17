@@ -33,20 +33,34 @@ export default function BeVolunteerModal({
 
     setIsSubmitting(true);
     try {
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-
-      // In real app, this would save to backend
-      console.log("Volunteer request submitted:", {
+      const requestPayload = {
         postId: post._id,
         volunteerName: user.name,
         volunteerEmail: user.email,
         suggestion: data.suggestion,
+        status: "pending",
+      };
+
+      const res = await fetch("http://localhost:5000/requests", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(requestPayload),
       });
+
+      if (!res.ok) throw new Error("Failed to submit request");
+
+      // Decrease volunteersNeeded using MongoDB $inc
+      await fetch(
+        `http://localhost:5000/posts/${post._id}/decrement-volunteers`,
+        {
+          method: "PATCH",
+        }
+      );
 
       toast.success("Your volunteer request has been submitted successfully!");
       onClose();
     } catch (error) {
+      console.error(error);
       toast.error("Failed to submit volunteer request. Please try again.");
     } finally {
       setIsSubmitting(false);
