@@ -142,10 +142,10 @@ export default function VolunteerPosts() {
           transition={{ duration: 0.6 }}
           className="mb-8"
         >
-          <h1 className="text-4xl font-bold text-gray-900 mb-2">
+          <h1 className="text-4xl font-bold mb-2">
             All Volunteer Opportunities
           </h1>
-          <p className="text-xl text-gray-600">
+          <p className="text-xl">
             Discover meaningful ways to contribute to your community
           </p>
         </motion.div>
@@ -233,7 +233,7 @@ export default function VolunteerPosts() {
           ) : (
             <>
               <div className="flex items-center justify-between mb-6">
-                <p className="text-gray-600">
+                <p>
                   Showing {filteredPosts.length} of {posts.length} opportunities
                 </p>
               </div>
