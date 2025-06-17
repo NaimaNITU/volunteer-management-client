@@ -6,7 +6,7 @@ A user-friendly platform to manage and participate in volunteer opportunities.
 
 ## 🔗 Live Site
 
-[https://volunteer-connect.netlify.app](https://volunteer-connect.netlify.app)
+https://volunteermanagement-gules.vercel.app
 
 ## 🚀 Tech Stack
 
