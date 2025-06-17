@@ -6,6 +6,7 @@ import { VolunteerPost } from "../types";
 import { useAuth } from "../contexts/AuthContext";
 import { format } from "date-fns";
 import toast from "react-hot-toast";
+import { API_BASE } from "../api/baseUrl";
 
 interface BeVolunteerModalProps {
   post: VolunteerPost;
@@ -41,7 +42,7 @@ export default function BeVolunteerModal({
         status: "pending",
       };
 
-      const res = await fetch("http://localhost:5000/requests", {
+      const res = await fetch(`${API_BASE}/requests`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(requestPayload),
@@ -50,12 +51,9 @@ export default function BeVolunteerModal({
       if (!res.ok) throw new Error("Failed to submit request");
 
       // Decrease volunteersNeeded using MongoDB $inc
-      await fetch(
-        `http://localhost:5000/posts/${post._id}/decrement-volunteers`,
-        {
-          method: "PATCH",
-        }
-      );
+      await fetch(`${API_BASE}/posts/${post._id}/decrement-volunteers`, {
+        method: "PATCH",
+      });
 
       toast.success("Your volunteer request has been submitted successfully!");
       onClose();

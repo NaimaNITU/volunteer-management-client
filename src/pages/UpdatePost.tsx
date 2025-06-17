@@ -12,6 +12,7 @@ import {
 } from "lucide-react";
 import { toast } from "react-hot-toast";
 import LoadingSpinner from "../components/LoadingSpinner";
+import { API_BASE } from "../api/baseUrl";
 
 const categories = [
   { value: "community", label: "Community Service" },
@@ -49,7 +50,7 @@ const UpdatePost = () => {
   useEffect(() => {
     const fetchPost = async () => {
       try {
-        const res = await fetch(`http://localhost:5000/volunteers/${id}`);
+        const res = await fetch(`${API_BASE}/volunteers/${id}`);
         if (!res.ok) throw new Error("Failed to fetch post");
         const data = await res.json();
 
@@ -108,7 +109,7 @@ const UpdatePost = () => {
 
     try {
       setSaving(true);
-      const res = await fetch(`http://localhost:5000/volunteers/${id}`, {
+      const res = await fetch(`${API_BASE}/volunteers/${id}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",

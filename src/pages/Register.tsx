@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import { useForm } from "react-hook-form";
 import { Eye, EyeOff, UserPlus } from "lucide-react";
 import { useAuth } from "../contexts/AuthContext";
+import { API_BASE } from "../api/baseUrl";
 
 interface RegisterForm {
   name: string;
@@ -43,7 +44,7 @@ export default function Register() {
     try {
       await registerUser(data.name, data.email, data.photoURL, data.password);
       // Send data to backend to store user details in the database (Optional)
-      const response = await fetch("http://localhost:5000/users", {
+      const response = await fetch(`${API_BASE}/users`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

@@ -14,6 +14,7 @@ import {
 } from "lucide-react";
 import { VolunteerPost } from "../types"; // Assuming you have this type defined
 import VolunteerCard from "../components/VolunteerCard"; // Assuming you have this component
+import { API_BASE } from "../api/baseUrl";
 
 const heroSlides = [
   {
@@ -59,7 +60,7 @@ export default function Home() {
     // Fetch the volunteer posts from the backend API
     const fetchPosts = async () => {
       try {
-        const response = await fetch("http://localhost:5000/volunteers");
+        const response = await fetch(`${API_BASE}/volunteers`);
         const data = await response.json();
 
         // Sort posts by deadline and get the first 6 posts

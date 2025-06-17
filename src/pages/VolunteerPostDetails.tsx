@@ -6,6 +6,7 @@ import { VolunteerPost } from "../types"; // Assuming you have this type defined
 import { format } from "date-fns";
 import { useAuth } from "../contexts/AuthContext";
 import BeVolunteerModal from "../components/BeVolunteerModal";
+import { API_BASE } from "../api/baseUrl";
 
 export default function VolunteerPostDetails() {
   const { id } = useParams<{ id: string }>();
@@ -19,9 +20,7 @@ export default function VolunteerPostDetails() {
       // Fetch post details from the API
       const fetchPost = async () => {
         try {
-          const response = await fetch(
-            `http://localhost:5000/volunteers/${id}`
-          );
+          const response = await fetch(`${API_BASE}/volunteers/${id}`);
           if (response.ok) {
             const data = await response.json();
             setPost(data);

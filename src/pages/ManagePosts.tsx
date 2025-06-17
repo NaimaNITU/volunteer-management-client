@@ -6,6 +6,7 @@ import { VolunteerPost, VolunteerRequest } from "../types";
 import toast from "react-hot-toast";
 import { format } from "date-fns";
 import { Link } from "react-router-dom";
+import { API_BASE } from "../api/baseUrl";
 
 export default function ManagePosts() {
   const { user } = useAuth();
@@ -25,7 +26,7 @@ export default function ManagePosts() {
       const fetchPosts = async () => {
         try {
           const response = await fetch(
-            `http://localhost:5000/volunteers/email?organizerEmail=${user.email}`
+            `${API_BASE}/volunteers/email?organizerEmail=${user.email}`
           );
           const data = await response.json();
           setMyPosts(data);
@@ -38,7 +39,7 @@ export default function ManagePosts() {
       const fetchRequests = async () => {
         try {
           const response = await fetch(
-            `http://localhost:5000/requests?volunteerEmail=${user.email}`
+            `${API_BASE}/requests?volunteerEmail=${user.email}`
           );
           const data = await response.json();
           setMyRequests(data);
@@ -61,12 +62,9 @@ export default function ManagePosts() {
       )
     ) {
       try {
-        const response = await fetch(
-          `http://localhost:5000/volunteers/${postId}`,
-          {
-            method: "DELETE",
-          }
-        );
+        const response = await fetch(`${API_BASE}/volunteers/${postId}`, {
+          method: "DELETE",
+        });
         if (response.ok) {
           setMyPosts((prev) => prev.filter((post) => post._id !== postId));
           toast.success("Post deleted successfully");
@@ -83,12 +81,9 @@ export default function ManagePosts() {
   const handleCancelRequest = async () => {
     if (!selectedRequest) return;
     try {
-      const res = await fetch(
-        `http://localhost:5000/requests/${selectedRequest._id}`,
-        {
-          method: "DELETE",
-        }
-      );
+      const res = await fetch(`${API_BASE}/requests/${selectedRequest._id}`, {
+        method: "DELETE",
+      });
       if (res.ok) {
         setMyRequests((prev) =>
           prev.filter((req) => req._id !== selectedRequest._id)
@@ -109,22 +104,19 @@ export default function ManagePosts() {
   const handleApproveRequest = async (request: VolunteerRequest) => {
     try {
       // 1. Update request status
-      const updateRes = await fetch(
-        `http://localhost:5000/requests/${request._id}`,
-        {
-          method: "PATCH",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ status: "approved" }),
-        }
-      );
+      const updateRes = await fetch(`${API_BASE}/requests/${request._id}`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ status: "approved" }),
+      });
 
       if (!updateRes.ok) throw new Error("Failed to update request");
 
       // 2. Decrement volunteersNeeded
       const volunteerRes = await fetch(
-        `http://localhost:5000/volunteers/${request.postId}/availability`,
+        `${API_BASE}/volunteers/${request.postId}/availability`,
         {
           method: "PATCH",
           headers: {

@@ -4,6 +4,7 @@ import { Search, LayoutGrid, List } from "lucide-react";
 import { VolunteerPost } from "../types"; // Assuming you have this type defined
 import { format } from "date-fns";
 import VolunteerCard from "../components/VolunteerCard";
+import { API_BASE } from "../api/baseUrl";
 
 export default function VolunteerPosts() {
   const [posts, setPosts] = useState<VolunteerPost[]>([]);
@@ -18,7 +19,7 @@ export default function VolunteerPosts() {
     // Fetch the posts from the backend API
     const fetchPosts = async () => {
       try {
-        const response = await fetch("http://localhost:5000/volunteers");
+        const response = await fetch(`${API_BASE}/volunteers`);
         const data = await response.json();
         setPosts(data);
         setFilteredPosts(data);

@@ -15,6 +15,7 @@ import {
 import { useAuth } from "../contexts/AuthContext";
 import toast from "react-hot-toast";
 import "react-datepicker/dist/react-datepicker.css";
+import { API_BASE } from "../api/baseUrl";
 
 interface PostForm {
   thumbnail: string;
@@ -75,7 +76,7 @@ export default function AddPost() {
       };
 
       // Make POST request to backend API
-      const response = await fetch("http://localhost:5000/volunteers", {
+      const response = await fetch(`${API_BASE}/volunteers`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
