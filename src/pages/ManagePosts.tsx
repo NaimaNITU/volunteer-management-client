@@ -163,10 +163,8 @@ export default function ManagePosts() {
           transition={{ duration: 0.6 }}
           className="mb-8"
         >
-          <h1 className="text-4xl font-bold text-gray-900 mb-2">
-            Manage My Posts
-          </h1>
-          <p className="text-xl text-gray-600">
+          <h1 className="text-4xl font-bold mb-2">Manage My Posts</h1>
+          <p className="text-xl">
             Manage your volunteer opportunities and requests
           </p>
         </motion.div>
@@ -178,9 +176,7 @@ export default function ManagePosts() {
           transition={{ duration: 0.6, delay: 0.1 }}
           className="mb-12"
         >
-          <h2 className="text-2xl font-bold text-gray-900 mb-6">
-            My Volunteer Need Posts
-          </h2>
+          <h2 className="text-2xl font-bold mb-6">My Volunteer Need Posts</h2>
 
           {myPosts.length === 0 ? (
             <div className="bg-white rounded-lg shadow-sm p-8 text-center">
@@ -318,9 +314,7 @@ export default function ManagePosts() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.2 }}
         >
-          <h2 className="text-2xl font-bold text-gray-900 mb-6">
-            My Volunteer Requests
-          </h2>
+          <h2 className="text-2xl font-bold mb-6">My Volunteer Requests</h2>
 
           {myRequests.length === 0 ? (
             <div className="bg-white rounded-lg shadow-sm p-8 text-center">

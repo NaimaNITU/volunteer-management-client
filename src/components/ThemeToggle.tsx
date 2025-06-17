@@ -27,7 +27,11 @@ const ThemeToggle = () => {
         theme === "light" ? "Switch to dark mode" : "Switch to light mode"
       }
     >
-      {theme === "light" ? <Moon size={20} /> : <Sun size={20} />}
+      {theme === "light" ? (
+        <Moon size={20} className="text-black" />
+      ) : (
+        <Sun size={20} className="text-black" />
+      )}
     </button>
   );
 };
