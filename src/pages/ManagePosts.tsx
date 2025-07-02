@@ -6,7 +6,10 @@ import { VolunteerPost, VolunteerRequest } from "../types";
 import toast from "react-hot-toast";
 import { format } from "date-fns";
 import { Link } from "react-router-dom";
+<<<<<<< HEAD
 import { API_BASE } from "../api/baseUrl";
+=======
+>>>>>>> 6d249e8 (browse opportunities error solve)
 
 export default function ManagePosts() {
   const { user } = useAuth();
@@ -15,8 +18,6 @@ export default function ManagePosts() {
   const [selectedRequest, setSelectedRequest] =
     useState<VolunteerRequest | null>(null);
   const [showConfirmModal, setShowConfirmModal] = useState(false);
-
-  console.log(user, "User");
 
   useEffect(() => {
     document.title = "Manage My Posts - VolunteerHub";
@@ -326,12 +327,12 @@ export default function ManagePosts() {
                 You haven't applied to volunteer for any opportunities yet.
                 Browse available posts to get started.
               </p>
-              <a
-                href="/volunteer-posts"
+              <Link
+                to="/volunteer-posts" // ✅ FIXED THIS LINK
                 className="bg-green-600 text-white px-6 py-3 rounded-lg font-medium hover:bg-green-700 transition-colors"
               >
                 Browse Opportunities
-              </a>
+              </Link>
             </div>
           ) : (
             <div className="bg-white rounded-lg shadow-sm overflow-hidden">
